@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      text-align: center;
+    }
+    .container {
+      height: 100%;
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      overflow-x: hidden;
+    }
+
+    .right{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width:40%;
+      right: 0;
+    }
+    .left{
+      width: 60%;
+      left: 0;
+    }
+
+    .btn-book {
+      padding: 20px 40px;
+      font-size: 24px;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      background-color: #6a0dad; /* Purple shade */
+      color: #fff;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+
+    .btn-book:hover {
+      background-color: #4b0781; /* Darker purple shade on hover */
+    }
+
+    .btn-post {
+      padding: 20px 40px;
+      font-size: 24px;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      background-color: #835caf; /* White */
+      color: #fff; /* Black text on white background */
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .btn-post:hover {
+      background-color: #a275af; /* Light gray on hover */
+    }
+    .btn-profile {
+      padding: 20px 40px;
+      font-size: 24px;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      background-color: #fff; /* White */
+      color: #000; /* Black text on white background */
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .btn-profile:hover {
+      background-color: #f0f0f0; /* Light gray on hover */
+    }
+  </style>
+</head>
+<body>
+  <div class="container right">
+    <a href="/home/book" class="btn-book">Book a Ride</a>
+    <a href="/home/post" class="btn-post">Post a Ride</a>
+    <a href="/profile/" class="btn-profile">Profile</a>
+  </div>
+  <img src="/homecar.jpg" alt="Not Found" class="container left">
+</body>
+</html>

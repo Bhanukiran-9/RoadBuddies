@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post a Ride</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <!-- Add your custom CSS styles here -->
+  <style>
+    /* Add your custom CSS styles here */
+    .container {
+      margin-top: 20px;
+    }
+    .btn-post {
+      background-color: #1e90ff; /* Blue theme */
+      border-color: #1e90ff;
+    }
+    .btn-post:hover {
+      background-color: #007bff; /* Darker blue on hover */
+      border-color: #007bff;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand" href="#">RoadRiders</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1 class="mt-4">Post a Ride</h1>
+    <hr>
+    <form action="/rides/create" method="POST" id="control">
+      <div class="mb-3">
+        <label for="departure" class="form-label">Departure</label>
+        <input type="text" class="form-control" id="departure" name="departure" placeholder="From" required>
+        <!--<ul id="departureResults" class="list-group"></ul> -->
+      </div>
+      <div class="mb-3">
+        <label for="destination" class="form-label">Destination</label>
+        <input type="text" class="form-control" id="destination" name="destination" placeholder="To" required>
+        <!--<ul id="destinationResults" class="list-group"></ul>-->
+      </div>
+      <div class="mb-3">
+        <label for="seatsAvailable" class="form-label">Seats Available</label>
+        <input type="number" class="form-control" id="seatsAvailable" name="seatsAvailable" required>
+      </div>
+      <div class="mb-3">
+        <label for="date" class="form-label">Date</label>
+        <input type="date" class="form-control" id="date" name="date" required>
+      </div>
+      <div class="mb-3">
+        <label for="time" class="form-label">Time</label>
+        <input type="time" class="form-control" id="time" name="time" required>
+      </div>
+      <div class="mb-3">
+        <label for="price" class="form-label">Price per Seat</label>
+        <input type="number" class="form-control" id="price" name="price">
+      </div>
+      <button type="submit" class="btn btn-post">Post Ride</button>
+    </form>    
+  </div>
+
+  <!-- JavaScript dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Add this script section to your rides.ejs file -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+  // Assuming you're using vanilla JavaScript
+  const form = document.getElementById('control');
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    
+    try {
+      const response = await axios.post('/rides/create', {
+        departure: document.getElementById('departure').value,
+        destination: document.getElementById('destination').value,
+        seatsAvailable: document.getElementById('seatsAvailable').value,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        price: document.getElementById('price').value
+      });
+      
+      alert(response.data.message); // Display the message received from the server
+      location.reload(); // Refresh the page
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle errors if needed
+    }
+  });
+
+  const departureInput = document.getElementById('departure');
+  const destinationInput = document.getElementById('destination');
+
+  // Function to fetch autocomplete suggestions
+  // Asynchronous function to fetch autocomplete results
+  async function fetchAutocompleteResults(input, resultsListId) {
+    const query = input.value.trim();
+    if (query === '') {
+      return;
+    }
+    try {
+      const response = await axios.get(`/rides/autocomplete/${resultsListId}?q=${query}`);
+      const results = response.data;
+      renderAutocompleteResults(results, resultsListId);
+    } catch (error) {
+      console.error('Error fetching autocomplete results:', error);
+    }
+  }
+
+  // Function to render autocomplete results
+  function renderAutocompleteResults(results, resultsListId) {
+    const resultsList = document.getElementById(resultsListId);
+    resultsList.innerHTML = '';
+    results.forEach(result => {
+      const listItem = document.createElement('li');
+      listItem.textContent = result;
+      listItem.classList.add('list-group-item');
+      listItem.addEventListener('click', () => {
+        document.getElementById(resultsListId.replace('Results', '')).value = result;
+        resultsList.innerHTML = '';
+      });
+      resultsList.appendChild(listItem);
+    });
+  }
+
+  // Event listeners for input fields
+  departureInput.addEventListener('input', () => fetchAutocompleteResults(departureInput, 'departureResults'));
+  destinationInput.addEventListener('input', () => fetchAutocompleteResults(destinationInput, 'destinationResults'));
+</script>
+</body>
+</html>

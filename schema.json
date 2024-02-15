@@ -1,0 +1,20 @@
+profile = {
+    id:should be id of same as user
+    date: account active date
+    rating: average rating obtained from trips
+    raidings: {
+        req_indexes : list of indexes of rider that are completed
+        post_indexes : list of indexes of rides that are successfully completed
+        cancled indexes : list of indexes of rides that got cancled either rides or posts
+    }
+}
+
+rides = {
+    id1 : user id of rider who posted
+    id2 : iser id of the rider who requested
+    post_from : start location of the post rider
+    post_to : destination location of the post rider
+    req_from : start location of the req rider
+    req_to : destiation location of the req rider
+    time : agreed upon time of the start location/ meetpoint.
+}

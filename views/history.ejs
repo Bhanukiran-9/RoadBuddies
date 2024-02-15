@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .sidebar {
+            height: 100%;
+            width: 200px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #343a40;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            padding: 10px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+        }
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+        .content {
+            margin-left: 200px;
+            padding: 20px;
+        }
+        .ride-card {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .ride-card h2 {
+            margin-bottom: 10px;
+            color: #007bff;
+        }
+        .status {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .status.accepted {
+            color: green;
+        }
+        .status.rejected {
+            color: red;
+        }
+        .status.pending {
+            color: orange;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="#" class="requested">Requested Rides</a>
+        <a href="#" class="posted">Posted Rides</a>
+    </div>
+    <div class="content">
+        <h1>History</h1>
+        <div id="requestedRides">
+            <h2>Requested Rides</h2>
+            <% if (requestedRides.length > 0) { %>
+                <% requestedRides.forEach(ride => { %>
+                    <div class="ride-card">
+                        <h2><%= ride.departure %> to <%= ride.destination %></h2>
+                        <p>Date: <%= ride.date %></p>
+                        <p>Time: <%= ride.time %></p>
+                        <p class="status <%= ride.requests[0].status %>">Status: <%= ride.requests[0].status.toUpperCase() %></p>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p>No requested rides found.</p>
+            <% } %>
+        </div>
+        <div id="postedRides" style="display:none">
+            <h2>Posted Rides</h2>
+            <% if (postedRides.length > 0) { %>
+                <% postedRides.forEach(ride => { %>
+                    <div class="ride-card">
+                        <h2><%= ride.departure %> to <%= ride.destination %></h2>
+                        <p>Date: <%= ride.date %></p>
+                        <p>Time: <%= ride.time %></p>
+                        <p class="status <%= ride.isActive ? 'active' : 'inactive' %>">Status: <%= ride.isActive ? 'Active' : 'Inactive' %></p>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p>No posted rides found.</p>
+            <% } %>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('.requested').addEventListener('click', function() {
+            document.getElementById('requestedRides').style.display = 'block';
+            document.getElementById('postedRides').style.display = 'none';
+        });
+
+        document.querySelector('.posted').addEventListener('click', function() {
+            document.getElementById('requestedRides').style.display = 'none';
+            document.getElementById('postedRides').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

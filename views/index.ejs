@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: #1a1a1a;
+      font-family: Arial, sans-serif;
+    }
+
+    section {
+      height: 100vh;
+      width: 100vw;
+      background-color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .container {
+      width: 420px;
+      background: transparent;
+      border: 2px solid rgba(255, 255, 255, .2);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+      color: #fff;
+      border-radius: 10px;
+      padding: 30px 40px;
+    }
+
+    .hero {
+      background-image: url("https://images.unsplash.com/photo-1508672019048-805c876b67e2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1586&q=80");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: top left;
+      text-align: center;
+      padding: 50px;
+      color: white;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      text-shadow: 1px 1px #00000050;
+    }
+
+    .hero a {
+      display: inline-block;
+      margin: 10px 0;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    .hero a:hover {
+      background-color: #0056b3;
+    }
+
+    .hero p {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    .hero p a {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    .hero p a:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+  <section class="hero">
+    <div class="container">
+      <h1>Find your next Ride</h1>
+      <a href="/auth/login">Login</a><br>
+      <p>Not Joined Us Yet<br> <a href="/auth/register">Sign up</a><br>To Join The Family</p>
+    </div>
+  </section>
+</body>
+
+</html>

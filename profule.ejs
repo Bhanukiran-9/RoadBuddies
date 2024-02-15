@@ -1,0 +1,45 @@
+<!-- views/profile.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <!-- Add your CSS styles here -->
+</head>
+<body>
+    <!-- Fixed navbar on the left -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-left">
+        <div class="container">
+            <!-- User's image -->
+            <img src="<%= user.imageUrl %>" alt="Profile Image" class="img-fluid rounded-circle">
+            <!-- User's personal details -->
+            <div>
+                <h4><%= user.username %></h4>
+                <p>Email: <%= user.email %></p>
+                <!-- Add more personal details here -->
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main content area -->
+    <div class="container">
+        <h1>User Profile</h1>
+        <!-- Display user's rides, if applicable -->
+        <% if (user.rides.length > 0) { %>
+            <h2>Rides Posted by <%= user.username %></h2>
+            <ul>
+                <% user.rides.forEach(ride => { %>
+                    <li><%= ride.departure %> to <%= ride.destination %>, Date: <%= ride.date %>, Time: <%= ride.time %></li>
+                <% }) %>
+            </ul>
+        <% } else { %>
+            <p>No rides posted by <%= user.username %>.</p>
+        <% } %>
+    </div>
+    
+    <!-- JavaScript dependencies -->
+    <!-- Add your JavaScript code here -->
+</body>
+</html>
