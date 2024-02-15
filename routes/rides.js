@@ -5,6 +5,7 @@ const Ride = require('../models/ride');
 const User = require('../models/user');
 const sendEmail = require('../middleware/MailHandler');
 
+
 // Route to render the rides page
 router.get('/', (req, res) => {
   res.render('rides'); // Assuming you have a rides.ejs file in your views directory
@@ -75,7 +76,7 @@ router.get('/autocomplete/departure', async (req, res) => {
 router.post('/filter', async (req, res) => {
   try {
     const { from, to, date } = req.body;
-    console.log(from, to, date);
+    console.log(req.body);
     // Query the "rides" collection for active rides that match the filter criteria
     const filteredRides = await Ride.find({
       departure: from,
@@ -83,6 +84,7 @@ router.post('/filter', async (req, res) => {
       date,
       isActive: true
     });
+    //onsole.log(filteredRides);
     res.json(filteredRides);
   } catch (error) {
     console.error('Error filtering rides for carpools:', error);

@@ -1,4 +1,5 @@
 // app.js
+
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -11,8 +12,15 @@ const historyRouter = require('./routes/history');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
+
 const app = express();
 const port = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+// Set up body-parser middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
@@ -24,11 +32,6 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
 }));
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-// Set up body-parser middleware
-app.use(bodyParser.urlencoded({ extended: true }));
 
 
 // Set up routes
