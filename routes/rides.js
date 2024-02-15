@@ -97,7 +97,6 @@ router.post('/:rideId/book', async (req, res) => {
       return res.status(401).json({ message: 'User not authenticated.' });
     }
     
-
     // Get the ride ID from the request parameters
     const carpoolId = req.params.rideId;
     const { numSeats } = req.body;
