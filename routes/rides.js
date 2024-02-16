@@ -21,7 +21,7 @@ router.post('/create', async (req, res) => {
 
     // Extract ride details from request body
     const { departure, destination, seatsAvailable, date, time, price } = req.body;
-
+    console.log(req.body);
     // Validate input data
     if (!departure || !destination || !seatsAvailable || !date || !time || !price) {
       console.log(req.body);
@@ -76,7 +76,7 @@ router.get('/autocomplete/departure', async (req, res) => {
 router.post('/filter', async (req, res) => {
   try {
     const { from, to, date } = req.body;
-    console.log(req.body);
+    console.log("Hello");
     // Query the "rides" collection for active rides that match the filter criteria
     const filteredRides = await Ride.find({
       departure: from,
@@ -84,7 +84,7 @@ router.post('/filter', async (req, res) => {
       date,
       isActive: true
     });
-    //onsole.log(filteredRides);
+    //console.log(filteredRides);
     res.json(filteredRides);
   } catch (error) {
     console.error('Error filtering rides for carpools:', error);

@@ -1,22 +1,22 @@
 // test/app.test.js
 const request = require('supertest');
-const router = require('../routes/rides');
-
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const app = require('../app');
+chai.use(chaiHttp);
+const expect = chai.expect;
 describe('POST /filter', () => {
     it('responds with status 200 and JSON data', (done) => {
-        request(router)
-            .post('/filter')
+        chai.request(app)
+            .post('/rides/filter')
             .send({from: 'vskp',to: 'mdp', date:'2024-02-18'})
-            .set('Accept', 'applicaton/json')
-            .expect('Content-Type', /json/)
-            .expect(200)
-            .end((err, res) => {
+            .then((res) => {
                 if (err) return done(err);
                 // You can further assert the JSON response here if needed
                 // For example:
-                // assert.equal(res.body.message, 'Data retrieved successfully');
-
-                const expectedRide = {
+                
+                expect(res).to.have.status(200);
+                const expectedRide = [{
                     driver: {
                         _id: '65cce0826c1429e7735a4597',
                         username: 'Bhanu Kiran'
@@ -31,12 +31,39 @@ describe('POST /filter', () => {
                     driverRating: 0,
                     requests: [],
                     riderRatings: [],
-                    __v: 0
-                };
+                    __v: 0,
+                    _id: '65cdd0642e5ae896c943ddb9'
+                }];
 
-                expect(res.body).to.deep.include(expectedRide);
+                expect(res.body).to.deep.equal(expectedRide);
                 
                 done();
-            });
+            }).catch((err) => {
+                return done()
+            })
     });
+    it('responds with status 200 and JSON data and is create function', (done) => {
+        chai.request(app)
+            .post('/rides/create')
+            .send({from: 'vskp',to: 'mdp', date:'2024-02-18'})
+            .then((res) => {
+                if (err) return done(err);
+
+                const data = {
+                    departure: 'vskp',
+                    destination: 'gwk',
+                    seatsAvailable: '4',
+                    date: '2024-02-22',
+                    time: '04:47',
+                    price: '200'
+                  };
+                expect.apply(res).to.have.status(200);
+                expect(res.body).to.have.equal({message :"Successfully inserted."});
+
+                done();
+            })
+            .catch(() => {
+                return done()
+            })
+        })
 });
