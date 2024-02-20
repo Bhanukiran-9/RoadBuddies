@@ -63,7 +63,7 @@ app.get('/logout', (req, res) => {
 });
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://ProjectRoad:NPTztgxA53lHdIIt@cluster0.cw81lph.mongodb.net/', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODBSTRING, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Connected to MongoDB');
     // Start the server
