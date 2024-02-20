@@ -22,12 +22,12 @@ router.get('/rides', isAuthenticated, async (req, res) => {
 
     // Fetch rides based on the query
     const rides = await Ride.find(query).populate('driver');
-    
+
     if (rides.length === 0) {
       // No rides found for the given criteria
       return res.render('carpools', { message: 'Sorry, no rides available' });
     }
-    
+
     // Render rides if found
     return res.render('carpools', { rides, user: req.session.userId });
   } catch (error) {
@@ -35,6 +35,7 @@ router.get('/rides', isAuthenticated, async (req, res) => {
     res.redirect('/');
   }
 });
+
 
 
 module.exports = router;

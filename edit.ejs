@@ -1,156 +1,412 @@
-<!-- views/login.ejs -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login to RoadRiders</title>
-  <!-- Add Bootstrap CSS -->
-  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <title>Carpools</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
-      
-    @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
-      
-    *
-    {
-        padding: 0;
-        margin: 0;
-        box-sizing: border-box;
-        font-family: 'Poppins', sans-serif;
-    
-    }
-    body{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background:url(https://img.playbook.com/IZSaaisbuPYRUSQYBZckzA61Px-1dJx2_5pGRp3N4dk/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljLzRkZmUwYjQ2/LWRhNjAtNDQ2Yy1h/Y2UxLWM0ZTZkMGI3/NTdlMA);
-        background-size: cover;
-        background-position: center;
-    }
-    .wrapper {
-        width: 420px;
-        background: transparent;
-        border:2px solid rgba(255, 255, 255, .2);
-        backdrop-filter:blur(20px);
-        box-shadow: 0 0 10px rgba(0 , 0 , 0 , .2);
-        color: #fff;
-        border-radius: 10px;
-        padding: 30px 40px;
-    
-    }
-    .wrapper h1{
-        font-size: 36px;
-        text-align: center;
-    }
-    .wrapper .input-box {
-        position: relative;
-        width: 100%;
-        height: 50px;
-        margin: 30px 0;
+    .split {
+      top: 0;
+      left: 0;
+      display: flex;
+      height: 100vh;
+      overflow-x: hidden;
     }
 
-    .input-box input{
-        width: 100%;
-        height: 100%;
-        background: transparent;
-        border: none;
-        outline: none;
-        border: 2px solid rgba(255, 255, 255, .2);
-        border-radius: 40px;
-        font-size: 16px;
-        color: #fff;
-        padding: 20px 45px 20px 20px;
+    .left {
+      padding: 20px;
+      width: 35%;
+      border: 2px solid rgb(62, 194, 218);
+      border-radius: 5px;
+      display: flex;
+      justify-content: center;
     }
-    .input-box input::placeholder{
-        color: #fff;
+
+    /* Control the right side */
+    .right {
+      width: 64%;
+      padding: 20px;
     }
-    .input-box i{
-        position: absolute;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 20px;
-    
+
+    .ride-card {
+      background-color: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-    .wrapper .remember-forgot{
-        display: flex;
-        justify-content: space-between;
-        font-size: 14.5px;
-        margin: -15px 0 15px;
+
+    .ride-card h2 {
+      margin-bottom: 10px;
+      color: #007bff;
     }
-    .remember-forgot label input{
-        accent-color: #fff;
-        margin-right: 3px;
+
+    .status {
+      font-weight: bold;
+      margin-top: 5px;
     }
-    .remember-forgot a{
-        color: #fff;
-        text-decoration: none;
-    
+
+    /* Adjust body layout */
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      height: 100vh;
+      margin: 0;
     }
-    .remember-forgot a:hover{
-        text-decoration: underline;
+
+    body>section {
+      flex: 1;
+      overflow-y: auto;
     }
-    .wrapper .btn{
-        width: 100%;
-        height: 45px;
-        border-radius: 40px;
-        border: none;
-        outline: none;
-        background: #fff;
-        box-shadow: 0 0 10px rgba(0 , 0 , 0 , .1);
-        cursor: pointer;
-        font-size: 16px;
-        color: #333;
-        font-weight: 600;
+
+    /* Autocomplete suggestions */
+    .autocomplete {
+      position: relative;
+      z-index: 1;
     }
-    .wrapper .register-link{
-       text-align: center;
-        font-size: 14.5px;
-        margin:20px 0 15px;
+
+    .suggestion-item {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      cursor: pointer;
     }
-    .register-link p a{
-        color: #fff;
-        text-decoration: none;
-        font-weight: 600;
-    
+
+    .suggestion-item:hover {
+      background-color: #f5f5f5;
     }
-    .register-link p a:hover{
-        text-decoration: underline;
+
+    .address {
+      font-weight: bold;
+    }
+
+    .suggestion-address {
+      color: #555;
+    }
+
+    .ztop {
+      display: flex;
+    }
+
+    .zcont {
+      width: 33%;
+      padding: 10px;
+    }
+
+    .zcard {
+      display: flex;
+      flex-direction: column;
+      width: 98%;
+      margin: 10px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 2px;
+    }
+
+    .own-style {
+      display: flex;
+      margin: 0 auto;
+      width: fit-content;
+    }
+
+    .autocomplete {
+      position: relative;
+      /* Position relative to contain absolutely positioned suggestion lists */
+    }
+
+    .autocomplete ul {
+      position: absolute;
+      /* Position suggestion lists absolutely */
+      width: 100%;
+      /* Occupy full width */
+      max-height: 200px;
+      /* Set a max height to limit suggestion list height */
+      overflow-y: auto;
+      /* Enable vertical scrolling if the content exceeds the max height */
+      border: 1px solid #ccc;
+      /* Add border for visual separation */
     }
   </style>
 </head>
+
 <body>
-    <div class="wrapper">
-        <form method="post" action="/auth/register">
-            <h1>Register</h1>
-            <div class="input-box">
-                <input type="text" placeholder="User Name" name="username" required>
-                <i class='bx bxs-user'></i>
+
+  <!-- Page content -->
+  <div class="split">
+    <div class="left p-2" id="map" style="height: 100%; width: 50%;"></div>
+    <div class="right">
+      <div class="d-flex">
+        <div class="p-2 w-100">
+          <h1>Road Riders</h1>
+        </div>
+        <div class="p-2 flex-shrink-1"><a href="/profile"><img src="/people.svg" alt="profile" height='35'
+              width="35"></a></div>
+      </div>
+      <div style="text-align: center;">
+        <h3>Book your ride</h3>
+      </div>
+      <div class="container my-5">
+        <form class="mb-4" id="searchForm">
+          <div class="row">
+            <div class="col">
+              <div class="autocomplete">
+                <input type="text" class="form-control" id="fromInput" placeholder="From" required>
+                <ul id="fromResults" class="list-group"></ul>
+              </div>
             </div>
-            <div class="input-box">
-                <input type="password" placeholder="password" name="password" required>
-                <i class='bx bxs-lock-alt'></i>
+            <div class="col">
+              <div class="autocomplete">
+                <input type="text" class="form-control" id="toInput" placeholder="To" required>
+                <ul id="toResults" class="list-group"></ul>
+              </div>
             </div>
-            <div class="input-box">
-                <input type="text" placeholder="Phone Number" name="phoneNumber" required>
-                <i class='bx bxs-user'></i>
+            <div class="col">
+              <input type="text" class="form-control" id="dateInput" placeholder="Date" required>
             </div>
-            <div class="input-box">
-                <input type="text" placeholder="Email" name="email" required>
-                <i class='bx bxs-user'></i>
+            <div class="col-auto">
+              <button type="submit" class="btn btn-primary">Search</button>
             </div>
-            <button type="submit" class="btn">Register</button>
-            <div class="register-link">
-                <p>Already have an account? <a href="/auth/login">
-                        Login
-                    </a></p>
-            </div>
+          </div>
         </form>
+        <div class="row" id="carpoolListings">
+          <!-- Carpool listings will be dynamically populated here -->
+        </div>
+        <div id="noCarpoolsMessage" class="text-center mt-3 d-none">
+          <p>No carpools found.</p>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      flatpickr('#dateInput', {
+        dateFormat: 'Y-m-d',
+        minDate: 'today'
+      });
+    });
+    // Initialize the map
+    var map = L.map('map').setView([17.7080, 83.3112], 12.6); // Set initial coordinates and zoom level
+
+    // Add the OpenStreetMap tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    let startPoint = [];
+    let endPoint = [];
+
+    async function fetchAutosuggestions(input, resultsListId, isFromInput) {
+      const query = input.value.trim();
+      if (query === '') {
+        return;
+      }
+      try {
+        const response = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`);
+        const suggestions = response.data;
+        renderAutosuggestions(suggestions, resultsListId, isFromInput);
+      } catch (error) {
+        console.error('Error fetching autosuggestions:', error);
+      }
+    }
+
+
+    async function displayRouteOnMap() {
+      if (!startPoint || !endPoint) {
+        console.log(startPoint, endPoint)
+        console.log('returning....')
+        return;
+      }
+      //const startLatLng = L.latLng(startPoint.lat, startPoint.lon);
+      //const endLatLng = L.latLng(endPoint.lat, endPoint.lon);
+      //console.log(startLatLng, endLatLng);
+
+      // Initialize an empty array to hold the route LatLng objects
+      //const latLngs = [startLatLng, endLatLng];
+      var sP = startPoint.lat + ',' + startPoint.lon;
+      var eP = endPoint.lat + ',' + endPoint.lon;
+      console.log(sP, eP);
+
+
+      var url = 'http://router.project-osrm.org/route/v1/driving/' + sP + ';' + eP;
+
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Extract the route geometry from the response
+          console.log('datais', data);
+          const routeGeometry = data.routes[0].geometry;
+          const decodedPolyline = polyline.decode(routeGeometry);
+          const polyline = L.polyline(decodedPolyline, { color: 'blue', weight: 5, opacity: 0.7 }).addTo(map);
+          console.log(2);
+          // Fit the map bounds to the polyline
+          map.fitBounds(polyline.getBounds());
+        })
+        .catch(error => {
+          console.error('Error fetching route:', error);
+        }, () => { console.log('error'); });
+
+    }
+    //function setPlace(name, isFromInput){
+    //  if (isFromInput){
+    //    document.getElementById('fromInput').value = name;
+    //    console.log("done");
+    //  }
+    //  else{
+    //    document.getElementById('toInput').value = name;
+    //  }
+    //}
+    // Function to render autosuggestions
+    function renderAutosuggestions(suggestions, resultsListId, isFromInput) {
+      const resultsList = document.getElementById(resultsListId);
+      resultsList.innerHTML = '';
+      suggestions.forEach(suggestion => {
+        const listItem = document.createElement('li');
+        listItem.classList.add('list-group-item', 'suggestion-item');
+        listItem.innerHTML = `<span class="address" id="${suggestion.place_id}"'>${suggestion.display_name.split(',')[0]}</span><br><span class="suggestion-address">${suggestion.display_name}</span>`;
+        listItem.addEventListener('click', function () {
+          // Set value of input field to selected suggestion
+          //setPlace(suggestion.display_name, isFromInput);
+          document.getElementById(resultsListId.replace('Results', 'Input')).value = suggestion.display_name;
+          if (isFromInput) {
+            startPoint = suggestion;
+            console.log(startPoint);
+          } else {
+            endPoint = suggestion;
+          }
+          // Clear auto-suggestion results
+          resultsList.innerHTML = '';
+        });
+        resultsList.appendChild(listItem);
+      });
+    }
+
+    // Event listeners for auto-suggestions
+    document.getElementById('fromInput').addEventListener('input', function () {
+      fetchAutosuggestions(this, 'fromResults', true);
+    });
+
+    document.getElementById('toInput').addEventListener('input', function () {
+      fetchAutosuggestions(this, 'toResults', false);
+    });
+
+    document.getElementById('searchForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const from = document.getElementById('fromInput').value;
+      const to = document.getElementById('toInput').value;
+      const date = document.getElementById('dateInput').value;
+      try {
+        const response = await axios.post('/rides/filter', { from, to, date });
+        console.log(response);
+        const filteredRides = response.data;
+        console.log(filteredRides);
+        renderCarpoolListings(filteredRides);
+        // Display route on map
+        displayRouteOnMap();
+      } catch (error) {
+        console.error('Error fetching filtered rides:', error);
+      }
+    });
+    document.body.addEventListener('click', function (event) {
+      console.log(event)
+      console.log('inside click 1');
+      const fromInput = document.getElementById('fromInput');
+      const toInput = document.getElementById('toInput');
+      const departureResults = document.getElementById('fromResults');
+      const destinationResults = document.getElementById('toResults');
+      const isClickInsideFromInput = fromInput.contains(event.target);
+      const isClickInsideToInput = toInput.contains(event.target);
+      const isClickInsideDepartureResults = departureResults.contains(event.target);
+      const isClickInsideDestinationResults = destinationResults.contains(event.target);
+
+
+      if (!isClickInsideFromInput && !isClickInsideDepartureResults) {
+        // If click is outside "from" input and auto-suggest results
+        //startPoint = null;
+        departureResults.innerHTML = ''; // Clear "from" auto-suggest results
+      }
+
+      if (!isClickInsideToInput && !isClickInsideDestinationResults) {
+        // If click is outside "to" input and auto-suggest results
+        //endPoint = null;
+        destinationResults.innerHTML = ''; // Clear "to" auto-suggest results
+      }
+    });
+
+    function renderCarpoolListings(carpools) {
+      const carpoolListingsContainer = document.getElementById('carpoolListings');
+      const noCarpoolsMessage = document.getElementById('noCarpoolsMessage');
+      carpoolListingsContainer.innerHTML = '';
+      noCarpoolsMessage.classList.add('d-none');
+
+      if (carpools.length > 0) {
+        carpoolListingsContainer.innerHTML = carpools.map(carpool => `
+            <div class="zcard">
+                <h5>${carpool.driver.username}</h5>
+                <div class="ztop">
+                  <div class="zcont">
+                    <p> Departure: ${carpool.departure}</p>
+                    <p> Destination: ${carpool.destination}</p>
+                  </div>
+                  <div class="zcont">
+                    <p> Seats Available: ${carpool.seatsAvailable}</p>
+                    <p> Date: ${carpool.date}</p>
+                  </div>
+                  <div class="zcont">
+                    <p> Time: ${carpool.time}</p>
+                    <label for="seats_${carpool._id}">Number of Seats:</label>
+                    <input type="number" id="seats_${carpool._id}" min="1" max="${carpool.seatsAvailable}">
+                  </div>
+                </div>
+                ${carpool.isActive ? `
+                    <button class="btn btn-primary own-style" onclick="bookRide('${carpool._id}', '${carpool.seatsAvailable}')">Book Now</button>
+                  ` : '<p class="text-danger">This ride is no longer available</p>'}
+            </div>
+        `).join('');
+      } else {
+        noCarpoolsMessage.classList.remove('d-none');
+      }
+    }
+
+    async function bookRide(carpoolId, availableSeats) {
+      const seatsInput = document.getElementById(`seats_${carpoolId}`);
+      const numSeats = parseInt(seatsInput.value);
+
+      if (isNaN(numSeats) || numSeats <= 0) {
+        alert('Please enter a valid number of seats.');
+      } else if (numSeats > availableSeats) {
+        alert('Number of seats requested exceeds available seats.');
+      } else {
+        try {
+          const response = await axios.post(`/rides/${carpoolId}/book`, { numSeats });
+          if (response.status === 200) {
+            alert('Booking request sent successfully!');
+          }
+          else if (response.status === 202) {
+            alert(response.data.message);
+          } else {
+            alert('Failed to send booking request. Please try again later.');
+          }
+        } catch (error) {
+          console.error('Error booking ride:', error);
+          alert('An error occurred while booking the ride. Please try again later.');
+        }
+      }
+    }
+  </script>
 </body>
+
 </html>
-
-
-
-

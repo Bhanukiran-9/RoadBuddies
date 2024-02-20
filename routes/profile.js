@@ -1,6 +1,7 @@
 const express = require('express');
 const User = require('../models/user');
 const Ride = require('../models/ride');
+const sendEmail = require('../middleware/MailHandler');
 
 const router = express.Router();
 
@@ -24,7 +25,7 @@ router.get('/', async (req, res) => {
     const postedRideIds = user.postedRides;
 
     // Fetch details of the posted ride requests
-    const postedRides = await Ride.find({ _id: { $in: postedRideIds }, isActive:true });
+    const postedRides = await Ride.find({ _id: { $in: postedRideIds }, isActive: true });
 
     // Initialize an array to store ride details with requester usernames
     const rideDetails = [];
@@ -38,7 +39,9 @@ router.get('/', async (req, res) => {
           //console.log(request);
           const requester = await User.findById(request.requestID, { username: 1 });
           if (requester) {
-            requesterDetails.push({ username: requester.username, seatsRequested: request.seatsRequested, _id: requester._id});
+            if (request.status == 'pending') {
+              requesterDetails.push({ username: requester.username, seatsRequested: request.seatsRequested, _id: requester._id });
+            }
           } else {
             console.log(`User not found for requestID: ${request.requestID}`);
           }
@@ -64,7 +67,9 @@ router.post('/rideaccept', async (req, res) => {
     const rideId = req.body.rideId;
     const requestId = req.body.requestId;
     //console.log(requestId);
+    cust = await User.findById(requestId);
     const ride = await Ride.findById(rideId);
+    owner = await User.findById(ride.driver._id);
     //console.log(requestId);
     if (!ride) {
       return res.status(404).json({ message: 'Ride not found.' });
@@ -75,9 +80,8 @@ router.post('/rideaccept', async (req, res) => {
     if (index === -1) {
       return res.status(404).json({ message: 'Ride request not found.' });
     }
-    if (ride.seatsAvailable < ride.requests[index].seatsRequested)
-    {
-      return res.status(202).json({message: "Cannot accept, Required Seats are Unavailable"});
+    if (ride.seatsAvailable < ride.requests[index].seatsRequested) {
+      return res.status(202).json({ message: "Cannot accept, Required Seats are Unavailable" });
     }
     // Decrease available seats based on the number of seats requested
     ride.seatsAvailable -= ride.requests[index].seatsRequested;
@@ -88,10 +92,22 @@ router.post('/rideaccept', async (req, res) => {
     ride.requests[index].status = "accepted";
     // Remove the accepted request from the ride's requests array
     //ride.requests.splice(index, 1);
+    let message1 = `
+    <h1>Contrates on sharing a ride</h1>
+    <p>This is the contact of the ${cust.username}:  ${cust.phoneNumber}</p>
+    <p>follow up ${cust.username} for communications</p>`;
+
+    let message2 = `
+    <h1>HOORAY request has been accepted</h1>
+    <p>This is the contact of the your RideBuddy ${owner.username}:  ${owner.phoneNumber}</p>
+    <p>Contact ${owner.username} for constant updates</p>
+    `;
 
     await ride.save();
+    sendEmail(owner.email, message1);
+    sendEmail(cust.email, message2);
     // Send success message to frontend
-    res.status(200).json({ message: 'Request accepted successfully.' });
+    res.redirect('profile');
   } catch (error) {
     console.error('Error accepting ride request:', error);
     res.status(500).json({ message: 'An error occurred while accepting ride request.' });
@@ -106,7 +122,7 @@ router.post('/ridereject', async (req, res) => {
     const requestId = req.body.requestId;
     console.log(requestId);
     const ride = await Ride.findById(rideId);
-    
+
     if (!ride) {
       return res.status(404).json({ message: 'Ride not found.' });
     }

@@ -72,3 +72,6 @@ mongoose.connect('mongodb+srv://ProjectRoad:NPTztgxA53lHdIIt@cluster0.cw81lph.mo
     });
   })
   .catch((error) => console.error('Error connecting to MongoDB:', error));
+
+//app.listen(port, () => {console.log("error")})
+module.exports = app;

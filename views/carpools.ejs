@@ -130,6 +130,15 @@
       border: 1px solid #ccc;
       /* Add border for visual separation */
     }
+    .leaflet-routing-alt
+    {
+      background-color: #eee;
+      /* position: absolute;
+      bottom: 1%;
+      right: 1%;
+      transform: scale(0.5); */
+      opacity: 0.9;
+    }
   </style>
 </head>
 
@@ -165,7 +174,7 @@
               </div>
             </div>
             <div class="col">
-              <input type="text" class="form-control" id="dateInput" placeholder="Date">
+              <input type="text" class="form-control" id="dateInput" placeholder="Date" required>
             </div>
             <div class="col-auto">
               <button type="submit" class="btn btn-primary">Search</button>
@@ -186,106 +195,128 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-        flatpickr('#dateInput', {
-            dateFormat: 'Y-m-d',
-            minDate: 'today'
-        });
+      flatpickr('#dateInput', {
+        dateFormat: 'Y-m-d',
+        minDate: 'today'
+      });
     });
-
     // Initialize the map
     var map = L.map('map').setView([17.7080, 83.3112], 12.6); // Set initial coordinates and zoom level
 
     // Add the OpenStreetMap tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    let startPoint = null;
-    let endPoint = null;
+    let startPoint = [];
+    let endPoint = [];
 
     async function fetchAutosuggestions(input, resultsListId, isFromInput) {
-        const query = input.value.trim();
-        if (query === '') {
-            return;
-        }
-        try {
-            const response = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`);
-            const suggestions = response.data;
-            renderAutosuggestions(suggestions, resultsListId, isFromInput);
-        } catch (error) {
-            console.error('Error fetching autosuggestions:', error);
-        }
+      const query = input.value.trim();
+      if (query === '') {
+        return;
+      }
+      try {
+        const response = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`);
+        const suggestions = response.data;
+        renderAutosuggestions(suggestions, resultsListId, isFromInput);
+      } catch (error) {
+        console.error('Error fetching autosuggestions:', error);
+      }
     }
 
-    function displayRouteOnMap() {
-        if (!startPoint || !endPoint) {
-            return;
-        }
-        const startLatLng = L.latLng(startPoint.lat, startPoint.lon);
-        const endLatLng = L.latLng(endPoint.lat, endPoint.lon);
 
-        // Initialize an empty array to hold the route LatLng objects
-        const latLngs = [startLatLng, endLatLng];
+    async function displayRouteOnMap() {
+      if (!startPoint || !endPoint) {
+        console.log(startPoint, endPoint)
+        console.log('returning....')
+        return;
+      }
+      //const startLatLng = L.latLng(startPoint.lat, startPoint.lon);
+      //const endLatLng = L.latLng(endPoint.lat, endPoint.lon);
+      //console.log(startLatLng, endLatLng);
 
-        // Create a polyline with the route coordinates and add it to the map
-        L.polyline(latLngs, { color: 'blue', weight: 5, opacity: 0.7 }).addTo(map);
+      // Initialize an empty array to hold the route LatLng objects
+      //const latLngs = [startLatLng, endLatLng];
+      var sP = startPoint.lat + ',' + startPoint.lon;
+      var eP = endPoint.lat + ',' + endPoint.lon;
+      console.log(sP, eP);
 
-        // Fit the map bounds to the route
-        map.fitBounds(latLngs);
+
+      L.Routing.control({
+        waypoints: [
+          L.latLng(startPoint.lat, startPoint.lon),
+          L.latLng(endPoint.lat, endPoint.lon)
+        ]
+      }).addTo(map);
+
     }
-
+    //function setPlace(name, isFromInput){
+    //  if (isFromInput){
+    //    document.getElementById('fromInput').value = name;
+    //    console.log("done");
+    //  }
+    //  else{
+    //    document.getElementById('toInput').value = name;
+    //  }
+    //}
     // Function to render autosuggestions
     function renderAutosuggestions(suggestions, resultsListId, isFromInput) {
-        const resultsList = document.getElementById(resultsListId);
-        resultsList.innerHTML = '';
-        suggestions.forEach(suggestion => {
-            const listItem = document.createElement('li');
-            listItem.classList.add('list-group-item', 'suggestion-item');
-            listItem.innerHTML = `<span class="address">${suggestion.display_name.split(',')[0]}</span><br><span class="suggestion-address">${suggestion.display_name}</span>`;
-            listItem.addEventListener('click', function () {
-                // Set value of input field to selected suggestion
-                document.getElementById(resultsListId.replace('Results', 'Input')).value = suggestion.display_name.split(',')[0];
-                if (isFromInput) {
-                    startPoint = suggestion;
-                } else {
-                    endPoint = suggestion;
-                }
-                // Clear auto-suggestion results
-                resultsList.innerHTML = '';
-            });
-            resultsList.appendChild(listItem);
+      const resultsList = document.getElementById(resultsListId);
+      resultsList.innerHTML = '';
+      suggestions.forEach(suggestion => {
+        const listItem = document.createElement('li');
+        listItem.classList.add('list-group-item', 'suggestion-item');
+        listItem.innerHTML = `<span class="address" id="${suggestion.place_id}"'>${suggestion.display_name.split(',')[0]}</span><br><span class="suggestion-address">${suggestion.display_name}</span>`;
+        listItem.addEventListener('click', function () {
+          // Set value of input field to selected suggestion
+          //setPlace(suggestion.display_name, isFromInput);
+          document.getElementById(resultsListId.replace('Results', 'Input')).value = suggestion.display_name;
+          if (isFromInput) {
+            startPoint = suggestion;
+            console.log(startPoint);
+          } else {
+            endPoint = suggestion;
+          }
+          // Clear auto-suggestion results
+          resultsList.innerHTML = '';
         });
+        resultsList.appendChild(listItem);
+      });
     }
 
     // Event listeners for auto-suggestions
     document.getElementById('fromInput').addEventListener('input', function () {
-        fetchAutosuggestions(this, 'fromResults', true);
+      fetchAutosuggestions(this, 'fromResults', true);
     });
 
     document.getElementById('toInput').addEventListener('input', function () {
-        fetchAutosuggestions(this, 'toResults', false);
+      fetchAutosuggestions(this, 'toResults', false);
     });
 
     document.getElementById('searchForm').addEventListener('submit', async function (event) {
-        event.preventDefault();
-        const from = document.getElementById('fromInput').value;
-        const to = document.getElementById('toInput').value;
-        const date = document.getElementById('dateInput').value;
-        try {
-            const response = await axios.post('/rides/filter', { from, to, date });
-            console.log(response);
-            const filteredRides = response.data;
-            console.log(filteredRides);
-            renderCarpoolListings(filteredRides);
-            // Display route on map
-            displayRouteOnMap();
-        } catch (error) {
-            console.error('Error fetching filtered rides:', error);
-        }
+      event.preventDefault();
+      const from = document.getElementById('fromInput').value;
+      const to = document.getElementById('toInput').value;
+      const date = document.getElementById('dateInput').value;
+      try {
+        const response = await axios.post('/rides/filter', { from, to, date });
+        console.log(response);
+        const filteredRides = response.data;
+        console.log(filteredRides);
+        renderCarpoolListings(filteredRides);
+        // Display route on map
+        displayRouteOnMap();
+      } catch (error) {
+        console.error('Error fetching filtered rides:', error);
+      }
     });
     document.body.addEventListener('click', function (event) {
+      console.log(event)
+      console.log('inside click 1');
       const fromInput = document.getElementById('fromInput');
       const toInput = document.getElementById('toInput');
       const departureResults = document.getElementById('fromResults');
@@ -295,15 +326,16 @@
       const isClickInsideDepartureResults = departureResults.contains(event.target);
       const isClickInsideDestinationResults = destinationResults.contains(event.target);
 
+
       if (!isClickInsideFromInput && !isClickInsideDepartureResults) {
         // If click is outside "from" input and auto-suggest results
-        startPoint = null;
+        //startPoint = null;
         departureResults.innerHTML = ''; // Clear "from" auto-suggest results
       }
 
       if (!isClickInsideToInput && !isClickInsideDestinationResults) {
         // If click is outside "to" input and auto-suggest results
-        endPoint = null;
+        //endPoint = null;
         destinationResults.innerHTML = ''; // Clear "to" auto-suggest results
       }
     });
@@ -368,7 +400,6 @@
         }
       }
     }
-
   </script>
 </body>
 
